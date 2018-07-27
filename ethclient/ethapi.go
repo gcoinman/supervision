@@ -13,6 +13,7 @@ import (
 type EthAPIClient interface {
 	GetBlockNumber() (int64, error)
 	GetBlockByBlockNumber(bnum int64) (*Block, error)
+	GetTransactionReceipt(client *http.Client, txhash string) (*TransactionReceipt, error)
 }
 
 // GetBlockNumber fetches the latest block number in ethereum network
@@ -56,6 +57,25 @@ func (c *EthClient) GetBlockByBlockNumber(client *http.Client, bnum int64, isFul
 	}
 
 	return resp.Block, nil
+}
+
+// GetTransactionReceipt fetches a receipt of a specified transaction hash
+func (c *EthClient) GetTransactionReceipt(client *http.Client, txhash string) (*TransactionReceipt, error) {
+	raw, err := c.do(client, "eth_getTransactionReceipt", []interface{}{txhash})
+	if err != nil {
+		return nil, err
+	}
+
+	resp := new(TransactionReceiptResponse)
+	if err := json.Unmarshal(raw, resp); err != nil {
+		return nil, errors.Wrap(err, "failed to fetch a transaction receipt")
+	}
+
+	if resp.Error != nil {
+		return nil, errors.New(resp.Error.Message)
+	}
+
+	return resp.Receipt, nil
 }
 
 func toHex(n int64) string {

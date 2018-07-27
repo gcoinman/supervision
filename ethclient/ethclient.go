@@ -26,18 +26,18 @@ func New(apiKey string, chainID ChainID) *EthClient {
 }
 
 type rpcRequest struct {
-	JsonRpc string      `json:"jsonrpc"`
-	ID      string      `json:"id"`
-	Method  string      `json:"method"`
-	Params  interface{} `json:"params"`
+	JSONRPCVersion string      `json:"jsonrpc"`
+	ID             string      `json:"id"`
+	Method         string      `json:"method"`
+	Params         interface{} `json:"params"`
 }
 
 func (c *EthClient) do(client *http.Client, method string, params interface{}) (json.RawMessage, error) {
 	body, err := json.Marshal(rpcRequest{
-		JsonRpc: "2.0",
-		ID:      "1",
-		Method:  method,
-		Params:  params,
+		JSONRPCVersion: "2.0",
+		ID:             "1",
+		Method:         method,
+		Params:         params,
 	})
 
 	if err != nil {
