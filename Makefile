@@ -1,0 +1,2 @@
+dep:
+	dep ensure -v

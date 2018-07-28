@@ -32,7 +32,7 @@ func (c *EthClient) GetBlockNumber(client *http.Client) (int64, error) {
 		return 0, errors.New(resp.Error.Message)
 	}
 
-	num, err := strconv.ParseInt(dropHexPrefix(resp.BlockNumber), 16, 64)
+	num, err := strconv.ParseInt(dropHexPrefix(resp.BlockNum), 16, 64)
 	if err != nil {
 		return 0, errors.Wrap(err, "failed to convert string to int")
 	}
