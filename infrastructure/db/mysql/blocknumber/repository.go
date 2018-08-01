@@ -22,7 +22,7 @@ func NewRepository() *Repository {
 	return &Repository{}
 }
 
-// GetLatest fetches an element with the latest block number
+// GetLatest fetches the latest element from a DB
 func (r *Repository) GetLatest(sqle mysqlutil.SQLExecutor) (*blocknumberdomain.BlockNum, error) {
 	const errtag = "Repository.Get failed"
 	var e Entity
@@ -36,9 +36,9 @@ func (r *Repository) GetLatest(sqle mysqlutil.SQLExecutor) (*blocknumberdomain.B
 }
 
 // Create creates a new entity of blocknumber
-func (r *Repository) Create(sqle mysqlutil.SQLExecutor, u *blocknumberdomain.BlockNum) error {
+func (r *Repository) Create(sqle mysqlutil.SQLExecutor, b *blocknumberdomain.BlockNum) error {
 	const errtag = "Repository.Create failed "
-	e := NewEntity(u)
+	e := NewEntity(b)
 
 	if err := sqle.DB().Insert(e); err != nil {
 		return errors.Wrapf(err, errtag)

@@ -8,25 +8,16 @@
   version = "v1.4.0"
 
 [[projects]]
+  name = "github.com/kelseyhightower/envconfig"
+  packages = ["."]
+  revision = "f611eb38b3875cc3bd991ca91c51d06446afa14c"
+  version = "v1.3.0"
+
+[[projects]]
   name = "github.com/pkg/errors"
   packages = ["."]
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
   version = "v0.8.0"
-
-[[projects]]
-  name = "github.com/rs/xid"
-  packages = ["."]
-  revision = "2c7e97ce663ff82c49656bca3048df0fdd83c5f9"
-  version = "v1.2.0"
-
-[[projects]]
-  branch = "master"
-  name = "golang.org/x/sys"
-  packages = [
-    "unix",
-    "windows"
-  ]
-  revision = "e072cadbbdc8dd3d3ffa82b8b4b9304c261d9311"
 
 [[projects]]
   name = "google.golang.org/appengine"
@@ -43,6 +34,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "32e985db24dbeccebd62dee800ce4deded783dac5aeb748f36d597076bccb26c"
+  inputs-digest = "139ae433e6600e6eb44f5ee1c52d6fb609c5abbf58d91763b1eee4a699ef604a"
   solver-name = "gps-cdcl"
   solver-version = 1
