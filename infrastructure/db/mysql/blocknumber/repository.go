@@ -46,3 +46,15 @@ func (r *Repository) Create(sqle mysqlutil.SQLExecutor, b *blocknumberdomain.Blo
 
 	return nil
 }
+
+// Exist todo
+func (r *Repository) Exist(sqle mysqlutil.SQLExecutor, num int64) bool {
+	const errtag = "Repository.Exist failed"
+	var e Entity
+
+	q := strings.Join([]string{"SELECT * FROM", TableName, "WHERE `block_number`=? FOR UPDATE"}, " ")
+	if err := sqle.DB().SelectOne(&e, q, num); err != nil {
+		return false
+	}
+	return true
+}

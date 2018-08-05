@@ -6,6 +6,7 @@ import "github.com/D-Technologies/go-tokentracker/lib/mysqlutil"
 type BlockNumRepository interface {
 	GetLatest(sqle mysqlutil.SQLExecutor) (*BlockNum, error)
 	Create(sqle mysqlutil.SQLExecutor, b *BlockNum) error
+	Exist(sqle mysqlutil.SQLExecutor, num int64) bool
 }
 
 // BlockNum todo

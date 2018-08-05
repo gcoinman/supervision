@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/D-Technologies/go-tokentracker/infrastructure/db/mysql/blocknumber"
+	"github.com/D-Technologies/go-tokentracker/infrastructure/ethclient"
 	"github.com/D-Technologies/go-tokentracker/lib/config"
 	"github.com/D-Technologies/go-tokentracker/lib/mysqlutil"
 
@@ -62,4 +63,16 @@ func InjectSQL() *mysqlutil.SQL {
 	mysql = mysqlutil.NewSQL(dbmap)
 
 	return mysql
+}
+
+var client *ethclient.EthClient
+
+// InjectEthClient injects ethclient
+func InjectEthClient() *ethclient.EthClient {
+	if client != nil {
+		return client
+	}
+
+	client = ethclient.New("z1sEfnzz0LLMsdYMX4PV", ethclient.Ropsten)
+	return client
 }
