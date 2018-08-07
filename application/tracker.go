@@ -101,7 +101,7 @@ func (t *TrackerApp) scanBlocks(blockNum int64) error {
 }
 
 func (t *TrackerApp) updateTxStatus(blockNum int64) error {
-	rts, err := t.ReceivedTransactionRepository.GetUncompletedTransaction(t.SQL)
+	rts, err := t.ReceivedTransactionRepository.GetSuccessAndPendingTransactions(t.SQL)
 	if err != nil {
 		return err
 	}
@@ -124,22 +124,17 @@ func (t *TrackerApp) updateTxStatus(blockNum int64) error {
 				rt.Error()
 			}
 
-			if err := t.ReceivedTransactionRepository.Update(t.SQL, rt); err != nil {
-				return err
-			}
-
 		case receivedtransactiondomain.Success:
-			if !rt.Confirmed(blockNum) {
-				break
-			}
-
-			rt := rt.Complete()
-			if err := t.ReceivedTransactionRepository.Update(t.SQL, rt); err != nil {
-				return err
+			if rt.Confirmed(blockNum) {
+				rt = rt.Complete()
 			}
 
 		default:
 			break
+		}
+
+		if err := t.ReceivedTransactionRepository.Update(t.SQL, rt); err != nil {
+			return err
 		}
 
 		fmt.Printf("\nUpdate received transaction found at %d, currently at %d. Status: %s\n", rt.BlockNum, blockNum, rt.Status)

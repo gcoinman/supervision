@@ -7,11 +7,10 @@ import (
 // ReceivedTransactionRepository is an interface for ReceivedTransaction infrastrusture
 type ReceivedTransactionRepository interface {
 	Create(sqle mysqlutil.SQLExecutor, rt *ReceivedTransaction) error
-	Update(sqle mysqlutil.SQLExecutor, rt *ReceivedTransaction) error
 	CreateMulti(sqle mysqlutil.SQLExecutor, rts []*ReceivedTransaction) error
-	GetUncompletedTransaction(sqle mysqlutil.SQLExecutor) ([]*ReceivedTransaction, error)
-	GetTransactions(sqle mysqlutil.SQLExecutor, status string) ([]*ReceivedTransaction, error)
+	Update(sqle mysqlutil.SQLExecutor, rt *ReceivedTransaction) error
 	Exist(sqle mysqlutil.SQLExecutor, hash string) bool
+	GetSuccessAndPendingTransactions(sqle mysqlutil.SQLExecutor) ([]*ReceivedTransaction, error)
 }
 
 var (
