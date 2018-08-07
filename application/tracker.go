@@ -45,6 +45,18 @@ func (t *TrackerApp) Do() error {
 		return err
 	}
 
+	if err := t.scanBlocks(blockNum); err != nil {
+		return err
+	}
+
+	if err := t.updateTxStatus(blockNum); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (t *TrackerApp) scanBlocks(blockNum int64) error {
 	lastBlockNum, err := t.BlockNumRepository.GetLatest(t.SQL)
 	if err != nil {
 		if errors.Cause(err).Error() == "sql: no rows in result set" {
@@ -59,8 +71,6 @@ func (t *TrackerApp) Do() error {
 	if lastBlockNum.Num == blockNum {
 		return nil
 	}
-
-	fmt.Printf("currenct block number is %d and last block number is %d\n", blockNum, lastBlockNum.Num)
 
 	for num := lastBlockNum.Num + 1; num <= blockNum; num++ {
 		b, err := t.EthClient.GetBlockByBlockNumber(t.Client, num, true)
@@ -85,6 +95,12 @@ func (t *TrackerApp) Do() error {
 		}
 	}
 
+	fmt.Printf("scaned blocks between %d and %d\n", blockNum, lastBlockNum.Num)
+
+	return nil
+}
+
+func (t *TrackerApp) updateTxStatus(blockNum int64) error {
 	rts, err := t.ReceivedTransactionRepository.GetUncompletedTransaction(t.SQL)
 	if err != nil {
 		return err
