@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/D-Technologies/go-tokentracker/infrastructure/db/mysql/blocknumber"
+	"github.com/D-Technologies/go-tokentracker/infrastructure/db/mysql/received_transaction"
 	"github.com/D-Technologies/go-tokentracker/infrastructure/ethclient"
 	"github.com/D-Technologies/go-tokentracker/lib/config"
 	"github.com/D-Technologies/go-tokentracker/lib/mysqlutil"
@@ -55,6 +56,7 @@ func InjectSQL() *mysqlutil.SQL {
 	dbmap.TraceOn("gorp", stdlog.New(os.Stderr, "gorptest: ", stdlog.Lmicroseconds))
 
 	dbmap.AddTableWithName(blocknumber.Entity{}, blocknumber.TableName).SetKeys(false, "BlockNum")
+	dbmap.AddTableWithName(receivedtransaction.Entity{}, receivedtransaction.TableName).SetKeys(false, "Hash")
 
 	if err := dbmap.CreateTablesIfNotExists(); err != nil {
 		panic(err)
@@ -73,6 +75,11 @@ func InjectEthClient() *ethclient.EthClient {
 		return client
 	}
 
-	client = ethclient.New("z1sEfnzz0LLMsdYMX4PV", ethclient.Ropsten)
+	// Ropsten
+	//client = ethclient.New("z1sEfnzz0LLMsdYMX4PV", ethclient.Ropsten)
+
+	// Localhost
+	client = ethclient.New("", ethclient.Localhost)
+
 	return client
 }

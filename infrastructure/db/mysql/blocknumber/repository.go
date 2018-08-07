@@ -47,7 +47,7 @@ func (r *Repository) Create(sqle mysqlutil.SQLExecutor, b *blocknumberdomain.Blo
 	return nil
 }
 
-// Exist todo
+// Exist checks if an entity with same primary key exists
 func (r *Repository) Exist(sqle mysqlutil.SQLExecutor, num int64) bool {
 	const errtag = "Repository.Exist failed"
 	var e Entity

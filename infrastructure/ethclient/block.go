@@ -5,7 +5,7 @@ type Block struct {
 	Hash         string         `json:"hash"`
 	Nonce        string         `json:"nonce"`
 	Timestamp    string         `json:"timestamp"`
-	Transactions *[]Transaction `json:"transactions"`
+	Transactions []*Transaction `json:"transactions"`
 }
 
 // BlockResponse represents an response of eth_getBlockByBlockNumber

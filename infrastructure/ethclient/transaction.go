@@ -7,7 +7,7 @@ type Transaction struct {
 	Gas       string `json:"gas"`
 	GasPrice  string `json:"gasPrice"`
 	Value     string `json:"value"`
-	Data      string `json:"data"`
+	Data      string `json:"input"`
 	BlockHash string `json:"blockHash"`
 	BlockNum  string `json:"blockNumber"`
 	Hash      string `json:"hash"`

@@ -9,8 +9,7 @@ type BlockNumRepository interface {
 	Exist(sqle mysqlutil.SQLExecutor, num int64) bool
 }
 
-// BlockNum todo
+// BlockNum represents a block number in domain layer
 type BlockNum struct {
-	Num  int64
-	Hash string
+	Num int64
 }

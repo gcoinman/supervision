@@ -2,7 +2,9 @@ package di
 
 import (
 	"github.com/D-Technologies/go-tokentracker/domain/blocknumber"
+	"github.com/D-Technologies/go-tokentracker/domain/receivedtransaction"
 	"github.com/D-Technologies/go-tokentracker/infrastructure/db/mysql/blocknumber"
+	"github.com/D-Technologies/go-tokentracker/infrastructure/db/mysql/received_transaction"
 )
 
 var blockNumRepository blocknumberdomain.BlockNumRepository
@@ -16,4 +18,17 @@ func InjectBlockNumRepository() blocknumberdomain.BlockNumRepository {
 	blockNumRepository = blocknumber.NewRepository()
 
 	return blockNumRepository
+}
+
+var receivedTransactionRepository receivedtransactiondomain.ReceivedTransactionRepository
+
+// InjectReceivedTransactionRepository injects a received transaction repository
+func InjectReceivedTransactionRepository() receivedtransactiondomain.ReceivedTransactionRepository {
+	if receivedTransactionRepository != nil {
+		return receivedTransactionRepository
+	}
+
+	receivedTransactionRepository = receivedtransaction.NewRepository()
+
+	return receivedTransactionRepository
 }
