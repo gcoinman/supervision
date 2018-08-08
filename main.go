@@ -21,6 +21,7 @@ func main() {
 		"0x8f3f6c17ae5fd5B09fD070216995B6ebF3B224dD",
 		di.InjectBlockNumRepository(),
 		di.InjectReceivedTransactionRepository(),
+		di.InjectConfirmedTransactionRepository(),
 		http.DefaultClient,
 		di.InjectEthClient(),
 		di.InjectSQL(),

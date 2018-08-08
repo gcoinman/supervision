@@ -7,8 +7,8 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/D-Technologies/go-tokentracker/domain/block"
-
 	"github.com/D-Technologies/go-tokentracker/domain/blocknumber"
+	"github.com/D-Technologies/go-tokentracker/domain/confirmedtransaction"
 	"github.com/D-Technologies/go-tokentracker/domain/receivedtransaction"
 	"github.com/D-Technologies/go-tokentracker/infrastructure/ethclient"
 	"github.com/D-Technologies/go-tokentracker/lib/mysqlutil"
@@ -16,25 +16,37 @@ import (
 
 // TrackerApp is an application layer that tracks tokens
 type TrackerApp struct {
-	ContractAddr                  string
-	ReceiveAddr                   string
-	BlockNumRepository            blocknumberdomain.BlockNumRepository
-	ReceivedTransactionRepository receivedtransactiondomain.ReceivedTransactionRepository
-	EthClient                     *ethclient.EthClient
-	Client                        *http.Client
-	SQL                           *mysqlutil.SQL
+	ContractAddr                   string
+	ReceiveAddr                    string
+	BlockNumRepository             blocknumberdomain.BlockNumRepository
+	ReceivedTransactionRepository  receivedtransactiondomain.ReceivedTransactionRepository
+	ConfirmedTransactionRepository confirmedtransactiondomain.ConfirmedTransactionRepository
+	EthClient                      *ethclient.EthClient
+	Client                         *http.Client
+	SQL                            *mysqlutil.SQL
 }
 
 // NewApp creates a new TrackerApp
-func NewApp(contractAddr, receiveAddr string, b blocknumberdomain.BlockNumRepository, r receivedtransactiondomain.ReceivedTransactionRepository, c *http.Client, ec *ethclient.EthClient, sql *mysqlutil.SQL) *TrackerApp {
+func NewApp(
+	contractAddr string,
+	receiveAddr string,
+	br blocknumberdomain.BlockNumRepository,
+	rr receivedtransactiondomain.ReceivedTransactionRepository,
+	cr confirmedtransactiondomain.ConfirmedTransactionRepository,
+	c *http.Client,
+	ec *ethclient.EthClient,
+	sql *mysqlutil.SQL,
+) *TrackerApp {
+
 	return &TrackerApp{
-		ContractAddr:                  contractAddr,
-		ReceiveAddr:                   receiveAddr,
-		BlockNumRepository:            b,
-		ReceivedTransactionRepository: r,
-		EthClient:                     ec,
-		Client:                        c,
-		SQL:                           sql,
+		ContractAddr:                   contractAddr,
+		ReceiveAddr:                    receiveAddr,
+		BlockNumRepository:             br,
+		ReceivedTransactionRepository:  rr,
+		ConfirmedTransactionRepository: cr,
+		EthClient:                      ec,
+		Client:                         c,
+		SQL:                            sql,
 	}
 }
 
@@ -50,6 +62,10 @@ func (t *TrackerApp) Do() error {
 	}
 
 	if err := t.updateTxStatus(blockNum); err != nil {
+		return err
+	}
+
+	if err := t.pushConfirmedTx(); err != nil {
 		return err
 	}
 
@@ -127,8 +143,15 @@ func (t *TrackerApp) updateTxStatus(blockNum int64) error {
 				rt = rt.Complete()
 			}
 
-		default:
-			break
+			ct := &confirmedtransactiondomain.ConfirmedTransaction{
+				TxHash:  rt.Hash,
+				From:    rt.From,
+				TokenID: rt.TokenID,
+			}
+
+			if err := t.ConfirmedTransactionRepository.Create(t.SQL, ct); err != nil {
+				return err
+			}
 		}
 
 		if err := t.ReceivedTransactionRepository.Update(t.SQL, rt); err != nil {
@@ -136,6 +159,24 @@ func (t *TrackerApp) updateTxStatus(blockNum int64) error {
 		}
 
 		fmt.Printf("\nUpdate received transaction found at %d, currently at %d. Status: %s\n", rt.BlockNum, blockNum, rt.Status)
+	}
+
+	return nil
+}
+
+func (t *TrackerApp) pushConfirmedTx() error {
+	cts, err := t.ConfirmedTransactionRepository.GetAll(t.SQL)
+	if err != nil {
+		return err
+	}
+
+	for _, ct := range cts {
+		// TODO: send a request
+		fmt.Print(ct)
+	}
+
+	if err := t.ConfirmedTransactionRepository.Delete(t.SQL, cts); err != nil {
+		return err
 	}
 
 	return nil

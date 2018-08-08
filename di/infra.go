@@ -6,6 +6,8 @@ import (
 	stdlog "log"
 	"os"
 
+	"github.com/D-Technologies/go-tokentracker/infrastructure/db/mysql/confirmed_transaction"
+
 	"github.com/D-Technologies/go-tokentracker/infrastructure/db/mysql/blocknumber"
 	"github.com/D-Technologies/go-tokentracker/infrastructure/db/mysql/received_transaction"
 	"github.com/D-Technologies/go-tokentracker/infrastructure/ethclient"
@@ -57,6 +59,7 @@ func InjectSQL() *mysqlutil.SQL {
 
 	dbmap.AddTableWithName(blocknumber.Entity{}, blocknumber.TableName).SetKeys(false, "BlockNum")
 	dbmap.AddTableWithName(receivedtransaction.Entity{}, receivedtransaction.TableName).SetKeys(false, "Hash")
+	dbmap.AddTableWithName(confirmedtransaction.Entity{}, confirmedtransaction.TableName).SetKeys(false, "TxHash")
 
 	if err := dbmap.CreateTablesIfNotExists(); err != nil {
 		panic(err)
