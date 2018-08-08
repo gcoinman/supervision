@@ -87,9 +87,7 @@ func (t *TrackerApp) scanBlocks(blockNum int64) error {
 		}
 
 		if !t.BlockNumRepository.Exist(t.SQL, num) {
-			if err := t.BlockNumRepository.Create(t.SQL, &blocknumberdomain.BlockNum{
-				Num: num,
-			}); err != nil {
+			if err := t.BlockNumRepository.Create(t.SQL, &blocknumberdomain.BlockNum{Num: num}); err != nil {
 				return err
 			}
 		}

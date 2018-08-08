@@ -40,8 +40,9 @@ func (b *Block) Scan(contractAddr, receiveAddr string) []*receivedtransactiondom
 			break
 		}
 
+		fmt.Print(removeZeros(tx.Data[139:202]), "-----")
 		blockNum, _ := strconv.ParseInt(tx.BlockNum, 0, 64)
-		tokenID, _ := strconv.ParseInt(removeZeros(tx.Data[139:202]), 0, 64)
+		tokenID, _ := strconv.ParseInt(removeZeros(tx.Data[139:202]), 16, 64)
 		from := fmt.Sprintf("0x%s", removeZeros(tx.Data[11:74]))
 
 		rt := &receivedtransactiondomain.ReceivedTransaction{
