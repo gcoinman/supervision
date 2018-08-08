@@ -1,9 +1,9 @@
-package blocknumberdomain
+package block_number_domain
 
-import "github.com/D-Technologies/go-tokentracker/lib/mysqlutil"
+import "github.com/D-Technologies/supervision/lib/mysqlutil"
 
-// BlockNumRepository is an interface for a repositroy of blocknumber
-type BlockNumRepository interface {
+// Repository is an interface for a repositroy of blocknumber
+type Repository interface {
 	GetLatest(sqle mysqlutil.SQLExecutor) (*BlockNum, error)
 	Create(sqle mysqlutil.SQLExecutor, b *BlockNum) error
 	Exist(sqle mysqlutil.SQLExecutor, num int64) bool

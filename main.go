@@ -7,10 +7,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/D-Technologies/go-tokentracker/application"
+	"github.com/D-Technologies/supervision/application"
 
-	"github.com/D-Technologies/go-tokentracker/di"
-	"github.com/D-Technologies/go-tokentracker/lib/config"
+	"github.com/D-Technologies/supervision/di"
+	"github.com/D-Technologies/supervision/lib/config"
 )
 
 func main() {

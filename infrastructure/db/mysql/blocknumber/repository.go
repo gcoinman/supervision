@@ -3,8 +3,8 @@ package blocknumber
 import (
 	"strings"
 
-	"github.com/D-Technologies/go-tokentracker/domain/blocknumber"
-	"github.com/D-Technologies/go-tokentracker/lib/mysqlutil"
+	"github.com/D-Technologies/supervision/domain/block_number_domain"
+	"github.com/D-Technologies/supervision/lib/mysqlutil"
 	"github.com/pkg/errors"
 )
 
@@ -23,7 +23,7 @@ func NewRepository() *Repository {
 }
 
 // GetLatest fetches the latest element from a DB
-func (r *Repository) GetLatest(sqle mysqlutil.SQLExecutor) (*blocknumberdomain.BlockNum, error) {
+func (r *Repository) GetLatest(sqle mysqlutil.SQLExecutor) (*block_number_domain.BlockNum, error) {
 	const errtag = "Repository.Get failed"
 	var e Entity
 
@@ -36,7 +36,7 @@ func (r *Repository) GetLatest(sqle mysqlutil.SQLExecutor) (*blocknumberdomain.B
 }
 
 // Create creates a new entity of blocknumber
-func (r *Repository) Create(sqle mysqlutil.SQLExecutor, b *blocknumberdomain.BlockNum) error {
+func (r *Repository) Create(sqle mysqlutil.SQLExecutor, b *block_number_domain.BlockNum) error {
 	const errtag = "Repository.Create failed "
 	e := NewEntity(b)
 

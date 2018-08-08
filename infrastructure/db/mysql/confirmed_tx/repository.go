@@ -1,10 +1,10 @@
-package confirmedtransaction
+package confirmed_tx
 
 import (
 	"strings"
 
-	"github.com/D-Technologies/go-tokentracker/domain/confirmedtransaction"
-	"github.com/D-Technologies/go-tokentracker/lib/mysqlutil"
+	"github.com/D-Technologies/supervision/domain/confirmed_tx_domain"
+	"github.com/D-Technologies/supervision/lib/mysqlutil"
 	"github.com/pkg/errors"
 )
 
@@ -23,7 +23,7 @@ func NewRepository() *Repository {
 }
 
 // Create creates a new entity
-func (r *Repository) Create(sqle mysqlutil.SQL, ct *confirmedtransactiondomain.ConfirmedTransaction) error {
+func (r *Repository) Create(sqle mysqlutil.SQLExecutor, ct *confirmed_tx_domain.ConfirmedTx) error {
 	const errtag = "Repository.Create failed "
 	e := NewEntity(ct)
 
@@ -35,7 +35,7 @@ func (r *Repository) Create(sqle mysqlutil.SQL, ct *confirmedtransactiondomain.C
 }
 
 // GetAll gets all the entities
-func (r *Repository) GetAll(sqle mysqlutil.SQL) ([]*confirmedtransactiondomain.ConfirmedTransaction, error) {
+func (r *Repository) GetAll(sqle mysqlutil.SQLExecutor) ([]*confirmed_tx_domain.ConfirmedTx, error) {
 	const errtag = "Repository.GetAll failed"
 
 	var es []*Entity
@@ -45,7 +45,7 @@ func (r *Repository) GetAll(sqle mysqlutil.SQL) ([]*confirmedtransactiondomain.C
 		return nil, err
 	}
 
-	cts := make([]*confirmedtransactiondomain.ConfirmedTransaction, 0, len(es))
+	cts := make([]*confirmed_tx_domain.ConfirmedTx, 0, len(es))
 	for _, v := range es {
 		cts = append(cts, v.Domain())
 	}
@@ -53,7 +53,7 @@ func (r *Repository) GetAll(sqle mysqlutil.SQL) ([]*confirmedtransactiondomain.C
 }
 
 // Delete deletes an entity
-func (r *Repository) Delete(sqle mysqlutil.SQL, cts []*confirmedtransactiondomain.ConfirmedTransaction) error {
+func (r *Repository) Delete(sqle mysqlutil.SQLExecutor, cts []*confirmed_tx_domain.ConfirmedTx) error {
 	for _, v := range cts {
 		if err := r.delete(sqle, v); err != nil {
 			return err
@@ -63,7 +63,7 @@ func (r *Repository) Delete(sqle mysqlutil.SQL, cts []*confirmedtransactiondomai
 	return nil
 }
 
-func (r *Repository) delete(sqle mysqlutil.SQL, ct *confirmedtransactiondomain.ConfirmedTransaction) error {
+func (r *Repository) delete(sqle mysqlutil.SQLExecutor, ct *confirmed_tx_domain.ConfirmedTx) error {
 	const errtag = "Repository.Delete failed"
 	e := NewEntity(ct)
 

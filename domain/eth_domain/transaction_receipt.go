@@ -1,8 +1,10 @@
-package ethclient
+package eth_domain
 
-import "strconv"
+import (
+	"strconv"
+)
 
-// TransactionReceipt represents a receipt of a transaction
+// TransactionReceipt represents a receipt of a tx
 type TransactionReceipt struct {
 	BlockNum string `json:"blockNumber"`
 	Hash     string `json:"blockHash"`
@@ -23,9 +25,12 @@ func (receipt *TransactionReceipt) IsSuccess() bool {
 	if err != nil {
 		return false
 	}
-	if num == 0 {
-		return true
-	} else {
-		return false
+	return num == 0
+}
+
+func dropHexPrefix(s string) string {
+	if s[:2] == "0x" {
+		return s[2:]
 	}
+	return s
 }

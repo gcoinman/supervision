@@ -6,14 +6,15 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/D-Technologies/supervision/domain/eth_domain"
 	"github.com/pkg/errors"
 )
 
 // EthAPIClient is an interface of ethereum apis
 type EthAPIClient interface {
 	GetBlockNumber() (int64, error)
-	GetBlockByBlockNumber(bnum int64) (*Block, error)
-	GetTransactionReceipt(client *http.Client, txhash string) (*TransactionReceipt, error)
+	GetBlockByBlockNumber(bnum int64) (*eth_domain.Block, error)
+	GetTransactionReceipt(client *http.Client, txhash string) (*eth_domain.TransactionReceipt, error)
 }
 
 // GetBlockNumber fetches the latest block number in ethereum network
@@ -23,7 +24,7 @@ func (c *EthClient) GetBlockNumber(client *http.Client) (int64, error) {
 		return 0, err
 	}
 
-	resp := new(BlockNumberResponse)
+	resp := new(eth_domain.BlockNumberResponse)
 	if err := json.Unmarshal(raw, resp); err != nil {
 		return 0, errors.Wrap(err, "failed to fetch blocknumber")
 	}
@@ -41,13 +42,13 @@ func (c *EthClient) GetBlockNumber(client *http.Client) (int64, error) {
 }
 
 // GetBlockByBlockNumber fetches the block with a specified block number.
-func (c *EthClient) GetBlockByBlockNumber(client *http.Client, bnum int64, isFullBlock bool) (*Block, error) {
+func (c *EthClient) GetBlockByBlockNumber(client *http.Client, bnum int64, isFullBlock bool) (*eth_domain.Block, error) {
 	raw, err := c.do(client, "eth_getBlockByNumber", []interface{}{toHex(bnum), isFullBlock})
 	if err != nil {
 		return nil, err
 	}
 
-	resp := new(BlockResponse)
+	resp := new(eth_domain.BlockResponse)
 	if err := json.Unmarshal(raw, resp); err != nil {
 		return nil, errors.Wrap(err, "failed to fetch a block")
 	}
@@ -59,16 +60,16 @@ func (c *EthClient) GetBlockByBlockNumber(client *http.Client, bnum int64, isFul
 	return resp.Block, nil
 }
 
-// GetTransactionReceipt fetches a receipt of a specified transaction hash
-func (c *EthClient) GetTransactionReceipt(client *http.Client, txhash string) (*TransactionReceipt, error) {
+// GetTransactionReceipt fetches a receipt of a specified tx hash
+func (c *EthClient) GetTransactionReceipt(client *http.Client, txhash string) (*eth_domain.TransactionReceipt, error) {
 	raw, err := c.do(client, "eth_getTransactionReceipt", []interface{}{txhash})
 	if err != nil {
 		return nil, err
 	}
 
-	resp := new(TransactionReceiptResponse)
+	resp := new(eth_domain.TransactionReceiptResponse)
 	if err := json.Unmarshal(raw, resp); err != nil {
-		return nil, errors.Wrap(err, "failed to fetch a transaction receipt")
+		return nil, errors.Wrap(err, "failed to fetch a tx receipt")
 	}
 
 	if resp.Error != nil {

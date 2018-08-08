@@ -1,4 +1,4 @@
-package blockdomain
+package block_domain
 
 import (
 	"fmt"
@@ -6,18 +6,18 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/D-Technologies/go-tokentracker/domain/receivedtransaction"
-	"github.com/D-Technologies/go-tokentracker/infrastructure/ethclient"
+	"github.com/D-Technologies/supervision/domain/eth_domain"
+	"github.com/D-Technologies/supervision/domain/received_tx_domain"
 )
 
 // Block represents a ethereum block in domain layer
 type Block struct {
-	Transactions []*ethclient.Transaction
+	Transactions []*eth_domain.Tx
 }
 
 // Scan scans all transactions in a block and see if transactions with specified conditions exist
-func (b *Block) Scan(contractAddr, receiveAddr string) []*receivedtransactiondomain.ReceivedTransaction {
-	var matchedTxs []*receivedtransactiondomain.ReceivedTransaction
+func (b *Block) Scan(contractAddr, receiveAddr string) []*received_tx_domain.ReceivedTx {
+	var matchedTxs []*received_tx_domain.ReceivedTx
 	for _, tx := range b.Transactions {
 		// tx.To address must be the same as contract address
 		// transfer(from, to, tokenID) or safeTransfer(from, to, tokenID)
@@ -40,17 +40,16 @@ func (b *Block) Scan(contractAddr, receiveAddr string) []*receivedtransactiondom
 			break
 		}
 
-		fmt.Print(removeZeros(tx.Data[139:202]), "-----")
 		blockNum, _ := strconv.ParseInt(tx.BlockNum, 0, 64)
 		tokenID, _ := strconv.ParseInt(removeZeros(tx.Data[139:202]), 16, 64)
 		from := fmt.Sprintf("0x%s", removeZeros(tx.Data[11:74]))
 
-		rt := &receivedtransactiondomain.ReceivedTransaction{
+		rt := &received_tx_domain.ReceivedTx{
 			Hash:     tx.Hash,
 			BlockNum: blockNum,
 			From:     from,
 			TokenID:  tokenID,
-			Status:   receivedtransactiondomain.Pending,
+			Status:   received_tx_domain.Pending,
 		}
 
 		fmt.Printf("\nDeposit was detected at %d, from %s. TokenID is %d.\n\n", rt.BlockNum, rt.From, rt.TokenID)

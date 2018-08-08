@@ -110,7 +110,7 @@ func TestRunInTransaction(t *testing.T) {
 
 				// count が1より大きい時はトランザクションが張れていないためエラー
 				if count > 1 {
-					err := errors.Errorf("failed transaction: count = %d", count)
+					err := errors.Errorf("failed tx: count = %d", count)
 					t.Fatalf("%s", err)
 					return err
 				}

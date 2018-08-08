@@ -1,4 +1,4 @@
-package ethclient
+package eth_domain
 
 // BlockNumberResponse represents a response of eth_getBlockNumber request.
 type BlockNumberResponse struct {

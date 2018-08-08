@@ -6,21 +6,21 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/D-Technologies/go-tokentracker/domain/block"
-	"github.com/D-Technologies/go-tokentracker/domain/blocknumber"
-	"github.com/D-Technologies/go-tokentracker/domain/confirmedtransaction"
-	"github.com/D-Technologies/go-tokentracker/domain/receivedtransaction"
-	"github.com/D-Technologies/go-tokentracker/infrastructure/ethclient"
-	"github.com/D-Technologies/go-tokentracker/lib/mysqlutil"
+	"github.com/D-Technologies/supervision/domain/block_domain"
+	"github.com/D-Technologies/supervision/domain/block_number_domain"
+	"github.com/D-Technologies/supervision/domain/confirmed_tx_domain"
+	"github.com/D-Technologies/supervision/domain/received_tx_domain"
+	"github.com/D-Technologies/supervision/infrastructure/ethclient"
+	"github.com/D-Technologies/supervision/lib/mysqlutil"
 )
 
 // TrackerApp is an application layer that tracks tokens
 type TrackerApp struct {
 	ContractAddr                   string
 	ReceiveAddr                    string
-	BlockNumRepository             blocknumberdomain.BlockNumRepository
-	ReceivedTransactionRepository  receivedtransactiondomain.ReceivedTransactionRepository
-	ConfirmedTransactionRepository confirmedtransactiondomain.ConfirmedTransactionRepository
+	BlockNumRepository             block_number_domain.Repository
+	ReceivedTransactionRepository  received_tx_domain.Repository
+	ConfirmedTransactionRepository confirmed_tx_domain.Repository
 	EthClient                      *ethclient.EthClient
 	Client                         *http.Client
 	SQL                            *mysqlutil.SQL
@@ -30,9 +30,9 @@ type TrackerApp struct {
 func NewApp(
 	contractAddr string,
 	receiveAddr string,
-	br blocknumberdomain.BlockNumRepository,
-	rr receivedtransactiondomain.ReceivedTransactionRepository,
-	cr confirmedtransactiondomain.ConfirmedTransactionRepository,
+	br block_number_domain.Repository,
+	rr received_tx_domain.Repository,
+	cr confirmed_tx_domain.Repository,
 	c *http.Client,
 	ec *ethclient.EthClient,
 	sql *mysqlutil.SQL,
@@ -76,7 +76,7 @@ func (t *TrackerApp) scanBlocks(blockNum int64) error {
 	lastBlockNum, err := t.BlockNumRepository.GetLatest(t.SQL)
 	if err != nil {
 		if errors.Cause(err).Error() == "sql: no rows in result set" {
-			lastBlockNum = &blocknumberdomain.BlockNum{
+			lastBlockNum = &block_number_domain.BlockNum{
 				Num: blockNum - 1,
 			}
 		} else {
@@ -88,13 +88,15 @@ func (t *TrackerApp) scanBlocks(blockNum int64) error {
 		return nil
 	}
 
+	fmt.Printf("\n\nScanning blocks between %d and %d\n\n", lastBlockNum.Num, blockNum)
+
 	for num := lastBlockNum.Num + 1; num <= blockNum; num++ {
 		b, err := t.EthClient.GetBlockByBlockNumber(t.Client, num, true)
 		if err != nil {
 			return err
 		}
 
-		domainBlock := blockdomain.Block{
+		domainBlock := block_domain.Block{
 			Transactions: b.Transactions,
 		}
 		rts := domainBlock.Scan(t.ContractAddr, t.ReceiveAddr)
@@ -103,13 +105,11 @@ func (t *TrackerApp) scanBlocks(blockNum int64) error {
 		}
 
 		if !t.BlockNumRepository.Exist(t.SQL, num) {
-			if err := t.BlockNumRepository.Create(t.SQL, &blocknumberdomain.BlockNum{Num: num}); err != nil {
+			if err := t.BlockNumRepository.Create(t.SQL, &block_number_domain.BlockNum{Num: num}); err != nil {
 				return err
 			}
 		}
 	}
-
-	fmt.Printf("scaned blocks between %d and %d\n", blockNum, lastBlockNum.Num)
 
 	return nil
 }
@@ -126,7 +126,7 @@ func (t *TrackerApp) updateTxStatus(blockNum int64) error {
 
 	for _, rt := range rts {
 		switch rt.Status {
-		case receivedtransactiondomain.Pending:
+		case received_tx_domain.Pending:
 			receipt, err := t.EthClient.GetTransactionReceipt(t.Client, rt.Hash)
 			if err != nil {
 				return err
@@ -138,12 +138,12 @@ func (t *TrackerApp) updateTxStatus(blockNum int64) error {
 				rt.Error()
 			}
 
-		case receivedtransactiondomain.Success:
+		case received_tx_domain.Success:
 			if rt.Confirmed(blockNum) {
 				rt = rt.Complete()
 			}
 
-			ct := &confirmedtransactiondomain.ConfirmedTransaction{
+			ct := &confirmed_tx_domain.ConfirmedTx{
 				TxHash:  rt.Hash,
 				From:    rt.From,
 				TokenID: rt.TokenID,
@@ -158,7 +158,7 @@ func (t *TrackerApp) updateTxStatus(blockNum int64) error {
 			return err
 		}
 
-		fmt.Printf("\nUpdate received transaction found at %d, currently at %d. Status: %s\n", rt.BlockNum, blockNum, rt.Status)
+		fmt.Printf("\n\nUpdate tx status with tokenID %d. Status: %s\n\n", rt.TokenID, rt.Status)
 	}
 
 	return nil
@@ -172,7 +172,7 @@ func (t *TrackerApp) pushConfirmedTx() error {
 
 	for _, ct := range cts {
 		// TODO: send a request
-		fmt.Print(ct)
+		fmt.Printf("\n\nTx confirmed: %s\n\n", ct.TxHash)
 	}
 
 	if err := t.ConfirmedTransactionRepository.Delete(t.SQL, cts); err != nil {

@@ -18,7 +18,7 @@ var DefaultConfig TokenTracker
 
 // Setup sets up a config
 func Setup() {
-	if err := setConf("go-tokentracker"); err != nil {
+	if err := setConf("supervision"); err != nil {
 		panic(err)
 	}
 }
@@ -26,7 +26,7 @@ func Setup() {
 func setConf(name string) error {
 	var a interface{}
 	switch name {
-	case "go-tokentracker":
+	case "supervision":
 		a = &DefaultConfig
 	default:
 		return errors.New("type not found")

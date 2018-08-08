@@ -1,10 +1,10 @@
-package receivedtransaction
+package received_tx
 
 import (
 	"strings"
 
-	"github.com/D-Technologies/go-tokentracker/domain/receivedtransaction"
-	"github.com/D-Technologies/go-tokentracker/lib/mysqlutil"
+	"github.com/D-Technologies/supervision/domain/received_tx_domain"
+	"github.com/D-Technologies/supervision/lib/mysqlutil"
 	"github.com/pkg/errors"
 )
 
@@ -23,7 +23,7 @@ func NewRepository() *Repository {
 }
 
 // Create creates a new entity
-func (r *Repository) Create(sqle mysqlutil.SQLExecutor, rt *receivedtransactiondomain.ReceivedTransaction) error {
+func (r *Repository) Create(sqle mysqlutil.SQLExecutor, rt *received_tx_domain.ReceivedTx) error {
 	const errtag = "Repository.Create failed "
 	e := NewEntity(rt)
 
@@ -35,7 +35,7 @@ func (r *Repository) Create(sqle mysqlutil.SQLExecutor, rt *receivedtransactiond
 }
 
 // CreateMulti creates multiple new entities
-func (r *Repository) CreateMulti(sqle mysqlutil.SQLExecutor, rts []*receivedtransactiondomain.ReceivedTransaction) error {
+func (r *Repository) CreateMulti(sqle mysqlutil.SQLExecutor, rts []*received_tx_domain.ReceivedTx) error {
 	for _, rt := range rts {
 		if r.Exist(sqle, rt.Hash) {
 			return nil
@@ -48,7 +48,7 @@ func (r *Repository) CreateMulti(sqle mysqlutil.SQLExecutor, rts []*receivedtran
 }
 
 // Update updates an entity
-func (r *Repository) Update(sqle mysqlutil.SQLExecutor, rt *receivedtransactiondomain.ReceivedTransaction) error {
+func (r *Repository) Update(sqle mysqlutil.SQLExecutor, rt *received_tx_domain.ReceivedTx) error {
 	const errtag = "Repository.Update failed"
 
 	e := NewEntity(rt)
@@ -73,7 +73,7 @@ func (r *Repository) Exist(sqle mysqlutil.SQLExecutor, hash string) bool {
 }
 
 // GetSuccessAndPendingTransactions fetches entities with status of pending or success
-func (r *Repository) GetSuccessAndPendingTransactions(sqle mysqlutil.SQLExecutor) ([]*receivedtransactiondomain.ReceivedTransaction, error) {
+func (r *Repository) GetSuccessAndPendingTransactions(sqle mysqlutil.SQLExecutor) ([]*received_tx_domain.ReceivedTx, error) {
 	const errtag = "Repository.GetSuccessAndPendingTransactions failed"
 
 	var es []*Entity
@@ -83,7 +83,7 @@ func (r *Repository) GetSuccessAndPendingTransactions(sqle mysqlutil.SQLExecutor
 		return nil, errors.Wrapf(err, errtag)
 	}
 
-	rts := make([]*receivedtransactiondomain.ReceivedTransaction, 0, len(es))
+	rts := make([]*received_tx_domain.ReceivedTx, 0, len(es))
 	for _, v := range es {
 		rts = append(rts, v.Domain())
 	}

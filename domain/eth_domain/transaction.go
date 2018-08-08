@@ -1,7 +1,7 @@
-package ethclient
+package eth_domain
 
-// Transaction represents a structure of a transaction in ethereum network
-type Transaction struct {
+// Tx represents a structure of a tx in ethereum network
+type Tx struct {
 	From      string `json:"from"`
 	To        string `json:"to"`
 	Gas       string `json:"gas"`

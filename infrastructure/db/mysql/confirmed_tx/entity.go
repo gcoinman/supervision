@@ -1,6 +1,6 @@
-package confirmedtransaction
+package confirmed_tx
 
-import "github.com/D-Technologies/go-tokentracker/domain/confirmedtransaction"
+import "github.com/D-Technologies/supervision/domain/confirmed_tx_domain"
 
 // Entity represents an entity
 type Entity struct {
@@ -10,7 +10,7 @@ type Entity struct {
 }
 
 // NewEntity creates a new entity
-func NewEntity(ct *confirmedtransactiondomain.ConfirmedTransaction) *Entity {
+func NewEntity(ct *confirmed_tx_domain.ConfirmedTx) *Entity {
 	return &Entity{
 		TxHash:  ct.TxHash,
 		From:    ct.From,
@@ -19,8 +19,8 @@ func NewEntity(ct *confirmedtransactiondomain.ConfirmedTransaction) *Entity {
 }
 
 // Domain converts an entity to domain
-func (e *Entity) Domain() *confirmedtransactiondomain.ConfirmedTransaction {
-	return &confirmedtransactiondomain.ConfirmedTransaction{
+func (e *Entity) Domain() *confirmed_tx_domain.ConfirmedTx {
+	return &confirmed_tx_domain.ConfirmedTx{
 		TxHash:  e.TxHash,
 		From:    e.From,
 		TokenID: e.TokenID,

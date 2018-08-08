@@ -6,13 +6,12 @@ import (
 	stdlog "log"
 	"os"
 
-	"github.com/D-Technologies/go-tokentracker/infrastructure/db/mysql/confirmed_transaction"
-
-	"github.com/D-Technologies/go-tokentracker/infrastructure/db/mysql/blocknumber"
-	"github.com/D-Technologies/go-tokentracker/infrastructure/db/mysql/received_transaction"
-	"github.com/D-Technologies/go-tokentracker/infrastructure/ethclient"
-	"github.com/D-Technologies/go-tokentracker/lib/config"
-	"github.com/D-Technologies/go-tokentracker/lib/mysqlutil"
+	"github.com/D-Technologies/supervision/infrastructure/db/mysql/blocknumber"
+	"github.com/D-Technologies/supervision/infrastructure/db/mysql/confirmed_tx"
+	"github.com/D-Technologies/supervision/infrastructure/db/mysql/received_tx"
+	"github.com/D-Technologies/supervision/infrastructure/ethclient"
+	"github.com/D-Technologies/supervision/lib/config"
+	"github.com/D-Technologies/supervision/lib/mysqlutil"
 
 	// empty import
 	_ "github.com/go-sql-driver/mysql"
@@ -28,7 +27,7 @@ func InjectDB() *sql.DB {
 	}
 
 	var err error
-	db, err = sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:3306)/go-tokentracker",
+	db, err = sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:3306)/supervision",
 		config.DefaultConfig.DbUser,
 		config.DefaultConfig.DbPassword,
 		config.DefaultConfig.DbHost,
@@ -58,8 +57,8 @@ func InjectSQL() *mysqlutil.SQL {
 	dbmap.TraceOn("gorp", stdlog.New(os.Stderr, "gorptest: ", stdlog.Lmicroseconds))
 
 	dbmap.AddTableWithName(blocknumber.Entity{}, blocknumber.TableName).SetKeys(false, "BlockNum")
-	dbmap.AddTableWithName(receivedtransaction.Entity{}, receivedtransaction.TableName).SetKeys(false, "Hash")
-	dbmap.AddTableWithName(confirmedtransaction.Entity{}, confirmedtransaction.TableName).SetKeys(false, "TxHash")
+	dbmap.AddTableWithName(received_tx.Entity{}, received_tx.TableName).SetKeys(false, "Hash")
+	dbmap.AddTableWithName(confirmed_tx.Entity{}, confirmed_tx.TableName).SetKeys(false, "TxHash")
 
 	if err := dbmap.CreateTablesIfNotExists(); err != nil {
 		panic(err)

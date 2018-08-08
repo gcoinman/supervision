@@ -1,4 +1,4 @@
-package ethclient
+package eth_domain
 
 // JSONRPCError represents an error in jsonrpc request
 type JSONRPCError struct {
