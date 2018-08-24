@@ -17,8 +17,9 @@ func main() {
 	config.Setup()
 
 	app := application.NewApp(
-		"0x232d9d6451bf3a2600cee974262e46aab02d4e0f",
-		"0x8f3f6c17ae5fd5B09fD070216995B6ebF3B224dD",
+		12985,
+		"0xf007ebf754666e2216399fcbd59243845d8ac421",
+		"0xf007ebf754666e2216399fcbd59243845d8ac555",
 		di.InjectBlockNumRepository(),
 		di.InjectReceivedTransactionRepository(),
 		di.InjectConfirmedTransactionRepository(),

@@ -16,6 +16,9 @@ const (
 
 	// Localhost chain id
 	Localhost = 0
+
+	// Getho chain id
+	Getho = 1010
 )
 
 // URL generates an url based on chain id with a provided api key
@@ -27,6 +30,8 @@ func (id ChainID) URL(apiKey string) string {
 		return fmt.Sprintf("https://ropsten.infura.io/%s", apiKey)
 	case Localhost:
 		return "http://localhost:7545"
+	case Getho:
+		return "http://single-deer-63991.dev.getho.io/jsonrpc"
 	default:
 		return ""
 	}

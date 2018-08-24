@@ -49,6 +49,8 @@ func (c *EthClient) do(client *http.Client, method string, params interface{}) (
 		return nil, err
 	}
 
+	req.Header.Set("Content-Type", "application/json")
+
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err

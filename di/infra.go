@@ -80,8 +80,8 @@ func InjectEthClient() *ethclient.EthClient {
 	// Ropsten
 	//client = ethclient.New("z1sEfnzz0LLMsdYMX4PV", ethclient.Ropsten)
 
-	// Localhost
-	client = ethclient.New("", ethclient.Localhost)
+	// Getho
+	client = ethclient.New("", ethclient.Getho)
 
 	return client
 }

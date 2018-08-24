@@ -25,7 +25,7 @@ func (receipt *TransactionReceipt) IsSuccess() bool {
 	if err != nil {
 		return false
 	}
-	return num == 0
+	return num == 1
 }
 
 func dropHexPrefix(s string) string {

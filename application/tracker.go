@@ -16,6 +16,7 @@ import (
 
 // TrackerApp is an application layer that tracks tokens
 type TrackerApp struct {
+	StartBlockNum                  int64
 	ContractAddr                   string
 	ReceiveAddr                    string
 	BlockNumRepository             block_number_domain.Repository
@@ -28,6 +29,7 @@ type TrackerApp struct {
 
 // NewApp creates a new TrackerApp
 func NewApp(
+	startBlockNum int64,
 	contractAddr string,
 	receiveAddr string,
 	br block_number_domain.Repository,
@@ -39,6 +41,7 @@ func NewApp(
 ) *TrackerApp {
 
 	return &TrackerApp{
+		StartBlockNum:                  startBlockNum,
 		ContractAddr:                   contractAddr,
 		ReceiveAddr:                    receiveAddr,
 		BlockNumRepository:             br,
@@ -77,7 +80,7 @@ func (t *TrackerApp) scanBlocks(blockNum int64) error {
 	if err != nil {
 		if errors.Cause(err).Error() == "sql: no rows in result set" {
 			lastBlockNum = &block_number_domain.BlockNum{
-				Num: blockNum - 1,
+				Num: t.StartBlockNum,
 			}
 		} else {
 			return err
