@@ -1,8 +1,11 @@
 package application
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+
+	"github.com/D-Technologies/supervision/proto"
 
 	"github.com/pkg/errors"
 
@@ -24,6 +27,7 @@ type TrackerApp struct {
 	ConfirmedTransactionRepository confirmed_tx_domain.Repository
 	EthClient                      *ethclient.EthClient
 	Client                         *http.Client
+	DepositClient                  deposit.DepositServiceClient
 	SQL                            *mysqlutil.SQL
 }
 
@@ -37,6 +41,7 @@ func NewApp(
 	cr confirmed_tx_domain.Repository,
 	c *http.Client,
 	ec *ethclient.EthClient,
+	dc deposit.DepositServiceClient,
 	sql *mysqlutil.SQL,
 ) *TrackerApp {
 
@@ -49,6 +54,7 @@ func NewApp(
 		ConfirmedTransactionRepository: cr,
 		EthClient:                      ec,
 		Client:                         c,
+		DepositClient:                  dc,
 		SQL:                            sql,
 	}
 }
@@ -107,10 +113,12 @@ func (t *TrackerApp) scanBlocks(blockNum int64) error {
 			return err
 		}
 
-		if !t.BlockNumRepository.Exist(t.SQL, num) {
-			if err := t.BlockNumRepository.Create(t.SQL, &block_number_domain.BlockNum{Num: num}); err != nil {
-				return err
-			}
+		if t.BlockNumRepository.Exist(t.SQL, num) {
+			break
+		}
+
+		if err := t.BlockNumRepository.Create(t.SQL, &block_number_domain.BlockNum{Num: num}); err != nil {
+			return err
 		}
 	}
 
@@ -174,7 +182,14 @@ func (t *TrackerApp) pushConfirmedTx() error {
 	}
 
 	for _, ct := range cts {
-		// TODO: send a request
+		pd := &deposit.Deposit{
+			TokenId: ct.TokenID,
+			From:    ct.From,
+		}
+		_, err := t.DepositClient.PushDeposit(context.Background(), pd)
+		if err != nil {
+			return err
+		}
 		fmt.Printf("\n\nTx confirmed: %s\n\n", ct.TxHash)
 	}
 

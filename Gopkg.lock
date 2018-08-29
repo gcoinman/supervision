@@ -8,6 +8,20 @@
   version = "v1.4.0"
 
 [[projects]]
+  name = "github.com/golang/protobuf"
+  packages = [
+    "proto",
+    "protoc-gen-go",
+    "protoc-gen-go/descriptor",
+    "protoc-gen-go/generator",
+    "protoc-gen-go/generator/internal/remap",
+    "protoc-gen-go/grpc",
+    "protoc-gen-go/plugin"
+  ]
+  revision = "aa810b61a9c79d51363740d207bb46cf8e620ed5"
+  version = "v1.2.0"
+
+[[projects]]
   name = "github.com/kelseyhightower/envconfig"
   packages = ["."]
   revision = "f611eb38b3875cc3bd991ca91c51d06446afa14c"
@@ -34,6 +48,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "139ae433e6600e6eb44f5ee1c52d6fb609c5abbf58d91763b1eee4a699ef604a"
+  inputs-digest = "da45c4b1373cc9420fb72a2f02e7a19f47d037a8cee41bb28ff6eebd00da5bd9"
   solver-name = "gps-cdcl"
   solver-version = 1

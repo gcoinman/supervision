@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+service DepositService {
+    rpc PushDeposit (Deposit) returns (DepositResponse) {}
+}
+
+message Deposit {
+    int64 token_id = 1;
+    string from = 2;
+}
+
+message DepositResponse {
+}

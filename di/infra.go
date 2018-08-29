@@ -12,6 +12,8 @@ import (
 	"github.com/D-Technologies/supervision/infrastructure/ethclient"
 	"github.com/D-Technologies/supervision/lib/config"
 	"github.com/D-Technologies/supervision/lib/mysqlutil"
+	"github.com/D-Technologies/supervision/proto"
+	"google.golang.org/grpc"
 
 	// empty import
 	_ "github.com/go-sql-driver/mysql"
@@ -84,4 +86,20 @@ func InjectEthClient() *ethclient.EthClient {
 	client = ethclient.New("", ethclient.Getho)
 
 	return client
+}
+
+var depositClient deposit.DepositServiceClient
+
+// InjectDepositClient injects grpc client for deposit service
+func InjectDepositClient() deposit.DepositServiceClient {
+	if depositClient != nil {
+		return depositClient
+	}
+
+	conn, err := grpc.Dial("", grpc.WithInsecure())
+	if err != nil {
+		panic(err)
+	}
+
+	return deposit.NewDepositServiceClient(conn)
 }

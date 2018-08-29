@@ -25,6 +25,7 @@ func main() {
 		di.InjectConfirmedTransactionRepository(),
 		http.DefaultClient,
 		di.InjectEthClient(),
+		di.InjectDepositClient(),
 		di.InjectSQL(),
 	)
 
