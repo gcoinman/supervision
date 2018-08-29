@@ -31,7 +31,7 @@ func (id ChainID) URL(apiKey string) string {
 	case Localhost:
 		return "http://localhost:7545"
 	case Getho:
-		return "http://single-deer-63991.dev.getho.io/jsonrpc"
+		return "https://tame-kitten-68170.getho.io/jsonrpc"
 	default:
 		return ""
 	}
