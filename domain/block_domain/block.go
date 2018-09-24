@@ -16,7 +16,7 @@ type Block struct {
 }
 
 // Scan scans all transactions in a block and see if transactions with specified conditions exist
-func (b *Block) Scan(contractAddr, receiveAddr string) []*received_tx_domain.ReceivedTx {
+func (b *Block) Scan(contractAddr string, receiveAddrs []string) []*received_tx_domain.ReceivedTx {
 	var matchedTxs []*received_tx_domain.ReceivedTx
 	for _, tx := range b.Transactions {
 		// tx.To address must be the same as contract address
@@ -35,26 +35,29 @@ func (b *Block) Scan(contractAddr, receiveAddr string) []*received_tx_domain.Rec
 			break
 		}
 
-		// If to-address is not equal to receive address (which you specify) then breaks
-		if to := fmt.Sprintf("0x%s", removeZeros(tx.Data[75:138])); strings.ToLower(to) != strings.ToLower(receiveAddr) {
-			break
+		for _, addr := range receiveAddrs {
+			// If to-address is not equal to receive address (which you specify) then breaks
+			if to := fmt.Sprintf("0x%s", removeZeros(tx.Data[75:138])); strings.ToLower(to) != strings.ToLower(addr) {
+				break
+			}
+
+			blockNum, _ := strconv.ParseInt(tx.BlockNum, 0, 64)
+			tokenID, _ := strconv.ParseInt(removeZeros(tx.Data[139:202]), 16, 64)
+			from := fmt.Sprintf("0x%s", removeZeros(tx.Data[11:74]))
+
+			rt := &received_tx_domain.ReceivedTx{
+				Hash:         tx.Hash,
+				BlockNum:     blockNum,
+				From:         from,
+				ReceiveAddir: addr,
+				TokenID:      tokenID,
+				Status:       received_tx_domain.Pending,
+			}
+
+			fmt.Printf("\nDeposit was detected at %d, from %s to %s. TokenID is %d.\n\n", rt.BlockNum, rt.From, addr, rt.TokenID)
+
+			matchedTxs = append(matchedTxs, rt)
 		}
-
-		blockNum, _ := strconv.ParseInt(tx.BlockNum, 0, 64)
-		tokenID, _ := strconv.ParseInt(removeZeros(tx.Data[139:202]), 16, 64)
-		from := fmt.Sprintf("0x%s", removeZeros(tx.Data[11:74]))
-
-		rt := &received_tx_domain.ReceivedTx{
-			Hash:     tx.Hash,
-			BlockNum: blockNum,
-			From:     from,
-			TokenID:  tokenID,
-			Status:   received_tx_domain.Pending,
-		}
-
-		fmt.Printf("\nDeposit was detected at %d, from %s. TokenID is %d.\n\n", rt.BlockNum, rt.From, rt.TokenID)
-
-		matchedTxs = append(matchedTxs, rt)
 	}
 
 	return matchedTxs

@@ -21,7 +21,7 @@ import (
 type TrackerApp struct {
 	StartBlockNum                  int64
 	ContractAddr                   string
-	ReceiveAddr                    string
+	ReceiveAddrs                   []string
 	BlockNumRepository             block_number_domain.Repository
 	ReceivedTransactionRepository  received_tx_domain.Repository
 	ConfirmedTransactionRepository confirmed_tx_domain.Repository
@@ -35,7 +35,7 @@ type TrackerApp struct {
 func NewApp(
 	startBlockNum int64,
 	contractAddr string,
-	receiveAddr string,
+	receiveAddrs []string,
 	br block_number_domain.Repository,
 	rr received_tx_domain.Repository,
 	cr confirmed_tx_domain.Repository,
@@ -48,7 +48,7 @@ func NewApp(
 	return &TrackerApp{
 		StartBlockNum:                  startBlockNum,
 		ContractAddr:                   contractAddr,
-		ReceiveAddr:                    receiveAddr,
+		ReceiveAddrs:                   receiveAddrs,
 		BlockNumRepository:             br,
 		ReceivedTransactionRepository:  rr,
 		ConfirmedTransactionRepository: cr,
@@ -108,7 +108,7 @@ func (t *TrackerApp) scanBlocks(blockNum int64) error {
 		domainBlock := block_domain.Block{
 			Transactions: b.Transactions,
 		}
-		rts := domainBlock.Scan(t.ContractAddr, t.ReceiveAddr)
+		rts := domainBlock.Scan(t.ContractAddr, t.ReceiveAddrs)
 		if err := t.ReceivedTransactionRepository.CreateMulti(t.SQL, rts); err != nil {
 			return err
 		}
@@ -155,9 +155,10 @@ func (t *TrackerApp) updateTxStatus(blockNum int64) error {
 			}
 
 			ct := &confirmed_tx_domain.ConfirmedTx{
-				TxHash:  rt.Hash,
-				From:    rt.From,
-				TokenID: rt.TokenID,
+				TxHash:       rt.Hash,
+				From:         rt.From,
+				ReceivedAddr: rt.ReceiveAddir,
+				TokenID:      rt.TokenID,
 			}
 
 			if err := t.ConfirmedTransactionRepository.Create(t.SQL, ct); err != nil {
@@ -183,8 +184,9 @@ func (t *TrackerApp) pushConfirmedTx() error {
 
 	for _, ct := range cts {
 		pd := &deposit.Deposit{
-			TokenId: ct.TokenID,
-			From:    ct.From,
+			TokenId:      ct.TokenID,
+			From:         ct.From,
+			ReceivedAddr: ct.ReceivedAddr,
 		}
 		_, err := t.DepositClient.PushDeposit(context.Background(), pd)
 		if err != nil {

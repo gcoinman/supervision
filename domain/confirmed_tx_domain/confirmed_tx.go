@@ -11,7 +11,8 @@ type Repository interface {
 
 // ConfirmedTx represents a confirmed tx
 type ConfirmedTx struct {
-	TxHash  string
-	From    string
-	TokenID int64
+	TxHash       string
+	From         string
+	ReceivedAddr string
+	TokenID      int64
 }

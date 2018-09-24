@@ -29,11 +29,12 @@ var (
 
 // ReceivedTx represents found transactions in Scan method
 type ReceivedTx struct {
-	Hash     string
-	BlockNum int64
-	From     string
-	TokenID  int64
-	Status   string
+	Hash         string
+	BlockNum     int64
+	From         string
+	ReceiveAddir string
+	TokenID      int64
+	Status       string
 }
 
 // Confirmed checks if a received-tx is confirmed by n th blcok

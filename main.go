@@ -19,7 +19,7 @@ func main() {
 	app := application.NewApp(
 		12985,
 		"0x6176e9ec8ab713e3ab4ca415d25f57eea52e3cd6",
-		"0xf007ebf754666e2216399fcbd59243845d8ac555",
+		[]string{"0xf007ebf754666e2216399fcbd59243845d8ac555"},
 		di.InjectBlockNumRepository(),
 		di.InjectReceivedTransactionRepository(),
 		di.InjectConfirmedTransactionRepository(),
